@@ -3,7 +3,7 @@ from django.db import models
 import random
 
 class Invoice(models.Model):
-    invoice_number = models.CharField(unique=True)
+    invoice_number = models.CharField(unique=True,max_length=100)
     date_created = models.DateField(auto_now_add=True)
     customer_name = models.CharField(max_length=100,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)
