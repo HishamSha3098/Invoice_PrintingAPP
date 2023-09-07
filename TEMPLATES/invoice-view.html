@@ -1,0 +1,120 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Column (Search Section) -->
+                <div class="col-md-6">
+                    <!-- Search input -->
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                    </div>
+                </div>
+
+                <!-- Right Column (New Invoice Button) -->
+                <div class="col-md-6 text-end">
+                    <a href={% url 'create-invoice' %} class="btn btn-success"><i class="ti ti-plus"></i>Add Invoice</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card overflow-auto">
+        <div class="card-body">
+            <div class="container mt-4">
+                <h2>Invoice Item Details</h2>
+                <div class="container mt-5">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <th>Company Name</th>
+                                <th>Client Name</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data from the database will be inserted here using server-side rendering or JavaScript -->
+                            {% for invoice in invoices %}
+                            <tr>
+                                <td><a href={% url 'invoice' invoice.invoice_number %}>{{invoice.invoice_number}}</a></td>
+                                <td>{{invoice.company_name}}</td>
+                                <td>{{invoice.customer_name}}</td>
+                                <td>{{invoice.total_amount}}</td>
+                                <td>{{invoice.date_created}}</td>
+                                <td class="text-center">
+                                   
+                                    <a href={% url 'delete-invoice' invoice.id %} class="btn btn-danger"><i class="ti ti-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                    <ul class="pagination" id="pagination"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get a reference to the search input field
+        const searchInput = document.getElementById('searchInput');
+
+        // Get all the table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+
+        // Add an event listener to the search input
+        searchInput.addEventListener('input', function () {
+            const searchText = searchInput.value.toLowerCase();
+
+            // Loop through all table rows
+            tableRows.forEach(function (row) {
+                const textContent = row.textContent.toLowerCase();
+
+                // If the row's text content contains the search text, display it; otherwise, hide it
+                if (textContent.includes(searchText)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Pagination
+        const tableBody = document.querySelector('tbody');
+        const rows = tableBody.querySelectorAll('tr');
+        const itemsPerPage = 3; // Number of items to display per page
+        const pagination = document.getElementById('pagination');
+
+        function updateVisibleRows(page) {
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = (i >= (page - 1) * itemsPerPage && i < page * itemsPerPage) ? '' : 'none';
+            }
+        }
+
+        function createPagination() {
+            const pageCount = Math.ceil(rows.length / itemsPerPage);
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement('li');
+                li.classList.add('page-item');
+                const link = document.createElement('a');
+                link.classList.add('page-link');
+                link.textContent = i;
+                link.addEventListener('click', () => updateVisibleRows(i));
+                li.appendChild(link);
+                pagination.appendChild(li);
+            }
+        }
+
+        updateVisibleRows(1);
+        createPagination();
+    </script>
+</div>
+{% endblock content %}

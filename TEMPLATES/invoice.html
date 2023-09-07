@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Example 1</title>
+    {% comment %} <link rel="stylesheet" href={% static 'css/styled.css' %} /> {% endcomment %}
+
+    <style>
+      @media print {
+          body {
+              margin: 0;
+              transform: scale(0.94); 
+              transform-origin: center;
+          }
+          #print-button {
+              display: none; /* Hide the "Print Invoice" button during printing */
+          }
+      }
+
+      textarea[readonly] {
+        border: none;
+        resize: none; /* Optional: Prevent resizing */
+        background-color: transparent; /* Optional: Make background transparent */
+        height: 100px;
+    }
+    {% comment %} .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: url(../assets/images/dimension.png);
+  } {% endcomment %}
+
+  .clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  
+  a {
+    color: #5D6975;
+    text-decoration: underline;
+  }
+  
+  body {
+    position: relative;
+    width: 21cm;
+    height: 29.7cm;
+    margin: 0 auto;
+    color: #001028;
+    background: #FFFFFF;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-family: Arial;
+  }
+  
+  header {
+    padding: 10px 0;
+    margin-bottom: 30px;
+  }
+  
+  #logo {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  #logo img {
+    /* width: 90px; */
+    height: 140px;
+  }
+  
+  /* h1 {
+    border-top: 1px solid #5D6975;
+    border-bottom: 1px solid #5D6975;
+    color: #5D6975;
+    font-size: 2.4em;
+    line-height: 1.4em;
+    font-weight: normal;
+    text-align: center;
+    margin: 0 0 20px 0;
+    background: url(../assets/images/dimension.png);
+  } */
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #5D6975;
+    border-bottom: 1px solid #5D6975;
+    color: #5D6975;
+    font-size: 1.6em;
+    line-height: 1.4em;
+    font-weight: normal;
+    text-align: center;
+    margin: 0 0 20px 0;
+    background: url(../assets/images/dimension.png);
+  }
+  
+  
+  /* #project {
+    float: left;
+  } */
+  
+  #project span {
+    color: #5D6975;
+    text-align: right;
+    width: 52px;
+    margin-right: 10px;
+    display: inline-block;
+    font-size: 0.8em;
+  }
+  
+  #company {
+    float: right;
+    text-align: right;
+  }
+  
+  #project div,
+  #company div {
+    white-space: nowrap;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 20px;
+  }
+  
+  table tr {
+    height: 30px; /* Decreased row height */
+  }
+  
+  
+  
+  /* table tr:nth-child(2n-1) td {
+    background: #f1eeee;
+  } */
+  
+  table th,
+  table td {
+    padding: 5px 15px; /* Adjusted padding */
+    text-align: center;
+    
+  }
+  thead{
+    background: #dedede;
+  }
+  
+  table th {
+    color: #5D6975;
+    border-bottom: 1px solid #C1CED9;
+    white-space: nowrap;
+    font-weight: normal;
+  }
+  
+  table .service,
+  table .desc {
+    text-align: left;
+  }
+  
+  table td {
+    text-align: right;
+  }
+  
+  table td.service,
+  table td.desc {
+    vertical-align: top;
+  }
+  
+  table td.unit,
+  table td.qty,
+  table td.total {
+    font-size: 1.2em;
+  }
+  
+  table td.grand {
+    border-top: 1px solid #5D6975;
+  }
+  
+  #notices .notice {
+    color: #5D6975;
+    font-size: 1.2em;
+  }
+  
+  
+  .address-text{
+    border: #001028 2px solid;
+    display: inline;
+    margin: 0;
+    font-size:xx-small;
+    text-indent: 100px; /* Adjust the indentation as needed */
+    
+  }
+  
+  
+  
+  footer {
+    color: #5D6975;
+    width: 100%;
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    border-top: 1px solid #C1CED9;
+    padding: 8px 0;
+    text-align: center;
+  }
+  
+    
+  </style>
+
+  </head>
+  <body>
+    <div id='invoice-content'>
+    <header class="clearfix">
+      <div id="logo">
+        <img src={% static 'assets/images/logos/logo.png' %}>
+      </div>
+      <div class="header-content">
+        <div style="text-align: left;"><span>PO NO.</span> NIL</div>
+        <div style="text-align: center;"><span></span> {{invoice.date_created}}</div>
+        <div style="text-align: right;"><span>INVOICE {{invoice.invoice_number}}</span></div>
+    </div>
+      <div id="company" class="clearfix">
+        <div>PETAL AL-MUMAIZE</div>
+        <div style="font-family: 'adobe arabic', sans-serif; font-weight: bold; font-size: 1.2em;">بتال المميز الخياطة الرجالية</div>
+        <br>
+        <div>KHAKI WALK DOOR NO. 1<br /> SHOP NO. 551 GROUND FLOOR<br/>
+          KUBAH STREET,<br/>AL MADINAH  AL MUNAWARA
+
+        </div>
+        <div>+966 511243541</div>
+        <div><a href="bitalmumaize@gmail.com">bitalmumaize@gmail.com</a></div>
+      </div>
+      <div id="project">
+        
+        <div><span>COMAPNY</span> {{invoice.company_name}}</div>
+        <div><span>CLIENT</span> {{invoice.customer_name}}</div>
+        {% comment %} <div><span>ADDRESS</span>
+        <div><span></span> <textarea readonly>{{invoice.address}}</textarea></div></div> {% endcomment %}
+        <div><span>PHONE</span> {{invoice.phone}}</div>
+        <div><span>EMAIL</span> <a href="mailto:{{invoice.email}}">{{invoice.email}}</a></div>
+        <div><span>CUST. VAT</span> {{invoice.vat_number}}</div>
+        {% comment %} <div><span>DATE</span> {{invoice.date_created}}</div> {% endcomment %}
+      </div>
+    </header>
+    <main>
+        <table>
+            <thead>
+              <tr>
+                <th class="service">SI No</th>
+                <th class="desc">Item Code</th>
+                <th>Description</th>
+                <th>Unit</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Vat %</th>
+                <th>Vat Amount</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in invoice_items %}
+              <tr>
+                <td class="service">{{forloop.counter}}</td>
+                <td class="desc">{{item.item_code}}</td>
+                <td>{{item.description}}</td>
+                <td>{{item.unit}}</td>
+                <td class="qty">{{item.qty}}</td>
+                <td class="unit">{{item.rate}}</td>
+                <td>{{item.vat_percent}}</td>
+                <td class="total">{{item.vat_amount}}</td>
+                <td class="total">{{item.amount}}</td>
+              </tr>
+             {% endfor %}
+              
+              <tr>
+                
+                <td class="total" style="height: 20px;"></td>
+              </tr>
+              <tr>
+                <td colspan="8">SUBTOTAL</td>
+                <td class="total">{{sub_total}}</td>
+              </tr>
+              <tr>
+                <td colspan="8">TAX 15%</td>
+                <td class="total">{{invoice.vat_total_amount}}</td>
+              </tr>
+              <tr>
+                <td colspan="8" class="grand total">GRAND TOTAL</td>
+                <td class="grand total">{{invoice.total_amount}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="text-align: center;">
+            <p style="font-size: 14px;">----- {{ total_amount_words }} -----</p>
+          </div>
+          
+          
+          <div id="qrcode">
+            <img src={{invoice.qr_code.url}}  style="height:150px;">
+        </div>
+
+      <div id="notices">
+        <div>NOTICE:</div>
+        <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
+      </div>
+    </main>
+    <footer>
+      Invoice was created on a computer and is valid without the signature and seal.
+    </footer>
+    <div>
+      <button id="print-button" onclick="printInvoice()">Print Invoice</button>
+
+    <!-- JavaScript to Handle Printing -->
+    <script>
+      function printInvoice() {
+          // Hide the "Print Invoice" button before printing
+          var printButton = document.getElementById('print-button');
+          printButton.style.display = 'none';
+
+          // Use window.print() to trigger the print dialog
+          window.print();
+
+          // Show the "Print Invoice" button again after printing (use a setTimeout to ensure it's shown after printing)
+          setTimeout(function () {
+              printButton.style.display = 'block';
+          }, 1000); // Adjust the delay as needed
+      }
+  </script>
+  </body>
+</html>

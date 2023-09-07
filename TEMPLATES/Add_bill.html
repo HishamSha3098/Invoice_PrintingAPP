@@ -1,0 +1,271 @@
+{% extends 'index.html' %}
+
+{% block content %}
+      <!--  content starts here-->
+
+      <div class="container-fluid">
+
+
+        <div class="card">
+          <div class="card-body">
+            <div class="container mt-4">
+              <h2>Create Invoice</h2>
+              <form id="invoice-form" method="POST">
+                {% csrf_token %}
+                <!-- Invoice details fields -->
+                <div class="row">
+                  <div class="col-md-6">
+                  
+                    <div class="form-group">
+                      <label for="company_name">Company Name</label>
+                      <input type="text" class="form-control" name="company_name" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="email">Email:</label>
+                      <input type="email" class="form-control" name="email">
+                    </div>
+                    <div class="form-group">
+                      <label for="phone">Phone:</label>
+                      <input type="text" class="form-control" name="phone" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="customer_name">Client Name</label>
+                      <input type="text" class="form-control" name="customer_name" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="cust_vat">Cust-VAT</label>
+
+                      <input type="text" class="form-control" name="cust_vat" required>
+
+
+                    </div>
+                  </div>
+                </div>
+              
+            
+            </div>
+          </div>
+        </div>
+
+        <div class="card overflow-auto">
+          <div class="card-body">
+            <div class="container mt-4">
+              <h2>Invoice Item Details</h2>
+              
+              <table id="item-table" class="table table-bordered">
+
+                  <thead>
+                    <tr>
+                      <th>Item Code</th>
+                      <th>Description</th>
+                      <th class="col-1">Unit</th>
+                      <th>Rate</th>
+                      <th>Qty</th>
+
+                      <th class="col-1">Vat%</th>
+                      <th>Vat Amount</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" name="item_code[]"></td>
+                        <td><input type="text" class="form-control" name="description[]" style="width: 250px;"></td>
+                        <td><input type="text" class="form-control" name="unit[]" style="width: 50px;"></td>
+                        <td><input type="text" class="form-control" name="rate[]" oninput="validateNumberInput(this)" onchange="calculateAmount(this)"></td>
+                        <td><input type="number" class="form-control" name="qty[]" onchange="calculateAmount(this)"></td>
+                        <td><input type="text" class="form-control" value="0" oninput="validateNumberInput(this)" name="vat_percentage[]" style="width: 50px;"></td>
+                        <td><input type="text" class="form-control" value="0.00" name="vat_amount[]" readonly></td>
+                        <td><input type="text" class="form-control" name="amount[]" readonly></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-6 d-flex">
+                    <div class="form-group ml-auto">
+                        <label for="total_amount">Total Amount:</label>
+                        <p id="total_amount_display" class="form-control-static">{{ invoice.total_amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-success" onclick="addRow()">Add Row</button>
+                <button  class="btn btn-primary" onclick="submitForm()">Submit</button>
+            </div>
+          </form>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+  {% comment %} var hasError = false; // Initialize hasError as false globally {% endcomment %}
+
+  function prepareFormData() {
+      var formData = {
+          customer_name: document.querySelector('[name="customer_name"]').value,
+          email: document.querySelector('[name="email"]').value,
+          phone: document.querySelector('[name="phone"]').value,
+          cust_vat: document.querySelector('[name="cust_vat"]').value,
+          company_name: document.querySelector('[name="company_name"]').value,
+          items: [] // Initialize the items array, but don't include it in validation
+      };
+  
+      
+      
+      if (!formData.customer_name){
+      
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Please fill out Client Details!',
+          });
+          return null; // Return null to indicate an error
+      }
+    
+  
+      var rows = document.querySelectorAll('#item-table tbody tr');
+  
+      rows.forEach(function (row) {
+          var item = {
+              item_code: row.querySelector('[name="item_code[]"]').value,
+              description: row.querySelector('[name="description[]"]').value,
+              unit: row.querySelector('[name="unit[]"]').value,
+              rate: row.querySelector('[name="rate[]"]').value,
+              qty: row.querySelector('[name="qty[]"]').value,
+              vat_percentage: row.querySelector('[name="vat_percentage[]"]').value,
+              vat_amount: row.querySelector('[name="vat_amount[]"]').value,
+              amount: row.querySelector('[name="amount[]"]').value
+          };
+  
+          formData.items.push(item);
+      });
+  
+      return formData;
+  }
+  
+  function getCSRFToken() {
+      var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      return csrfToken;
+  }
+  
+  function submitForm() {
+      var data = prepareFormData();
+      console.log(data,'---------------------data---------------------')
+  
+      if (data !== null) { // Check if data is not null (no error)
+          var csrfToken = getCSRFToken();
+  
+          var headers = {
+              "X-CSRFToken": csrfToken
+          };
+  
+          // Use an AJAX request to send data to the backend
+          // Example using jQuery AJAX
+          $.ajax({
+              type: 'POST',
+              url: '{% url 'create-invoice' %}',
+              data: JSON.stringify(data),
+              headers: headers, // Include CSRF token in headers
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+              success: function (response) {
+                  // Handle success
+              },
+              error: function (error) {
+                  // Handle error
+              }
+          });
+      }
+  }
+  
+
+  
+
+
+function validateNumberInput(input) {
+    // Remove any non-numeric characters except dot (.)
+    input.value = input.value.replace(/[^0-9.]/g, '');
+
+    // Ensure that there's only one dot (.) in the input
+    if (input.value.split('.').length > 2) {
+        input.value = input.value.slice(0, -1);
+    }
+}
+
+function calculateAmount(input) {
+    var row = input.closest("tr");
+    var qty = parseFloat(row.querySelector('[name="qty[]"]').value);
+    var rate = parseFloat(row.querySelector('[name="rate[]"]').value);
+    var vatPercent = parseFloat(row.querySelector('[name="vat_percentage[]"]').value);
+    var amountField = row.querySelector('[name="amount[]"]');
+    var vatAmountField = row.querySelector('[name="vat_amount[]"]');
+
+    var amount = qty * rate;
+    var vatAmount = (amount * vatPercent) / 100;
+    vatAmountField.value = vatAmount.toFixed(2)
+    amountField.value = (amount + vatAmount).toFixed(2);
+
+    updateTotalAmountDisplay();
+}
+
+function updateTotalAmountDisplay() {
+    var totalAmount = 0;
+    var amountFields = document.querySelectorAll('[name="amount[]"]');
+
+    amountFields.forEach(function (amountField) {
+        totalAmount += parseFloat(amountField.value);
+    });
+
+    var totalAmountDisplay = document.getElementById("total_amount_display");
+    totalAmountDisplay.textContent = totalAmount.toFixed(2);
+}
+
+function addRow() {
+    var table = document.getElementById("item-table");
+    var newRow = table.insertRow(table.rows.length);
+
+    var cells = newRow.insertCell(0);
+    cells.innerHTML = `<input type="text" class="form-control" name="item_code[]">`;
+
+    cells = newRow.insertCell(1);
+    cells.innerHTML = `<input type="text" class="form-control" name="description[]" style="width: 250px;">`;
+
+    cells = newRow.insertCell(2);
+    cells.innerHTML = `<input type="text" class="form-control" name="unit[]" style="width: 50px;">`;
+
+    cells = newRow.insertCell(3);
+    cells.innerHTML = `<input type="text" class="form-control" name="rate[]" oninput="validateNumberInput(this)" onchange="calculateAmount(this)">`;
+
+    cells = newRow.insertCell(4);
+    cells.innerHTML = `<input type="number" class="form-control" name="qty[]" onchange="calculateAmount(this)">`;
+
+    cells = newRow.insertCell(5);
+    cells.innerHTML = `<input type="text" class="form-control" value="0" oninput="validateNumberInput(this)" name="vat_percentage[]" style="width: 50px;">`;
+
+    cells = newRow.insertCell(6);
+    cells.innerHTML = `<input type="text" class="form-control" value="0.00" name="vat_amount[]" readonly>`;
+
+    cells = newRow.insertCell(7);
+    cells.innerHTML = `<input type="text" class="form-control" name="amount[]" readonly>`;
+
+    cells = newRow.insertCell(8);
+    cells.innerHTML = `<button type="button" class="btn btn-danger" onclick="removeRow(this)"><i class="ti ti-trash"></i>
+    </button>`;
+}
+
+function removeRow(button) {
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    updateTotalAmountDisplay();
+}
+</script>
+
+<!-- content ends here -->
+{% endblock %}
+
+   
