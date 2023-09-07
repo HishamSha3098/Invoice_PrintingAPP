@@ -19,7 +19,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.http import HttpResponse
-from xhtml2pdf import pisa 
+# from xhtml2pdf import pisa 
 from django.template.loader import get_template
 from io import BytesIO
 from django.core.files import File
