@@ -78,7 +78,7 @@ def sent_email(invoice):
         sub_total = invoice.total_amount - invoice.vat_total_amount
         total_amount = invoice.total_amount
         total_amount_words = convert_amount_to_words(total_amount)
-        user_message = render_to_string('email_invoice.html', {'invoice_items': invoiceItem,'invoice':invoice,'total_amount_words':total_amount_words,'total_amount':total_amount,'sub_total':sub_total})
+        user_message = render_to_string('email--invoice.html', {'invoice_items': invoiceItem,'invoice':invoice,'total_amount_words':total_amount_words,'total_amount':total_amount,'sub_total':sub_total})
         user_plain_message = strip_tags(user_message)
         user_from_email = settings.DEFAULT_FROM_EMAIL
         user_to_email = invoice.email
